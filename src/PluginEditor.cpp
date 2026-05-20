@@ -106,16 +106,20 @@ void OpenRefMonitorAudioProcessorEditor::resized()
     attributionLabel.setBounds(area.removeFromBottom(26));
 
     auto right = area.removeFromRight(260).reduced(10);
-    auto layoutSlider = [&right](juce::Label& label, juce::Slider& slider, int height) {
-        auto sliderArea = right.removeFromTop(height);
-        label.setBounds(sliderArea.removeFromTop(20));
-        slider.setBounds(sliderArea);
+    auto sliderGrid = right.removeFromTop(312);
+    auto layoutSlider = [](juce::Rectangle<int> cell, juce::Label& label, juce::Slider& slider) {
+        cell.reduce(4, 2);
+        label.setBounds(cell.removeFromTop(18));
+        slider.setBounds(cell);
     };
-    layoutSlider(amountLabel, amountSlider, 96);
-    layoutSlider(dryWetLabel, dryWetSlider, 96);
-    layoutSlider(outputGainLabel, outputGainSlider, 96);
-    layoutSlider(bassTiltLabel, bassTiltSlider, 88);
-    layoutSlider(trebleTiltLabel, trebleTiltSlider, 88);
+    auto firstRow = sliderGrid.removeFromTop(104);
+    layoutSlider(firstRow.removeFromLeft(120), amountLabel, amountSlider);
+    layoutSlider(firstRow.removeFromLeft(120), dryWetLabel, dryWetSlider);
+    auto secondRow = sliderGrid.removeFromTop(104);
+    layoutSlider(secondRow.removeFromLeft(120), outputGainLabel, outputGainSlider);
+    layoutSlider(secondRow.removeFromLeft(120), bassTiltLabel, bassTiltSlider);
+    auto thirdRow = sliderGrid.removeFromTop(104);
+    layoutSlider(thirdRow.removeFromLeft(120), trebleTiltLabel, trebleTiltSlider);
     safeHeadroomButton.setBounds(right.removeFromTop(34));
     monoButton.setBounds(right.removeFromTop(34));
     latencyLabel.setBounds(right.removeFromTop(30));
