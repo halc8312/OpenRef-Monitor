@@ -42,7 +42,7 @@ jobs:
         shell: pwsh
         run: |
           python tools/validate_profile.py resources/profiles/audio-technica-ath-m70x.autoeq.json
-          python -m py_compile tools/*.py
+          python -m py_compile (Get-ChildItem tools -Filter *.py).FullName
 
       - name: Configure
         shell: pwsh
