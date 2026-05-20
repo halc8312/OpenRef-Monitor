@@ -8,6 +8,8 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include <array>
+
 class OpenRefMonitorAudioProcessor final : public juce::AudioProcessor {
 public:
     OpenRefMonitorAudioProcessor();
@@ -16,6 +18,7 @@ public:
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override {}
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+    using juce::AudioProcessor::processBlock;
     void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) override;
 
     juce::AudioProcessorEditor* createEditor() override;
@@ -25,6 +28,7 @@ public:
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
     bool isMidiEffect() const override { return false; }
+    bool supportsDoublePrecisionProcessing() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
     int getNumPrograms() override { return 1; }
     int getCurrentProgram() override { return 0; }
@@ -42,10 +46,21 @@ public:
     [[nodiscard]] const openref::profile::CalibrationProfile& activeProfile() const noexcept { return profile; }
 
 private:
+    static constexpr std::size_t maxRealtimeExtraFilters = openref::dsp::CorrectionEngine::maxExtraFilters;
+
     void loadBundledProfile();
+    void loadBundledTargetsAndSimulations();
     void rebuildEngine(double sampleRate);
+    void updateExtraFilters();
+    double calculateCurrentSafeHeadroomDb() const noexcept;
+    static void appendTiltFilters(std::array<openref::dsp::FilterSpec, maxRealtimeExtraFilters>& filters,
+                                  std::size_t& filterCount,
+                                  float bassTiltDb,
+                                  float trebleTiltDb);
 
     openref::profile::CalibrationProfile profile;
+    std::vector<openref::profile::TargetCurve> targets;
+    std::vector<openref::profile::SimulationProfile> simulations;
     openref::dsp::CorrectionEngine engine;
     openref::dsp::PeakMeter inputMeter;
     openref::dsp::PeakMeter outputMeter;
@@ -53,6 +68,11 @@ private:
     openref::dsp::MeterState lastInputMeter;
     openref::dsp::MeterState lastOutputMeter;
     std::vector<float> monoScratch;
+    std::array<openref::dsp::FilterSpec, maxRealtimeExtraFilters> realtimeExtraFilters;
+    int lastTargetIndex { -1 };
+    int lastTranslationIndex { -1 };
+    float lastBassTiltDb {};
+    float lastTrebleTiltDb {};
     double currentAutoPreampDb {};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OpenRefMonitorAudioProcessor)

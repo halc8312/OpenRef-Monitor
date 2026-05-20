@@ -8,7 +8,7 @@ OpenRefMonitorAudioProcessorEditor::OpenRefMonitorAudioProcessorEditor(OpenRefMo
     setSize(1080, 650);
 
     title.setText("OpenRef Monitor", juce::dontSendNotification);
-    title.setFont(juce::Font(26.0f, juce::Font::bold));
+    title.setFont(juce::Font(juce::FontOptions(26.0f, juce::Font::bold)));
     addAndMakeVisible(title);
 
     warning.setText("Monitoring only - do not print correction to mix. Use Cubase Control Room Monitor Insert.", juce::dontSendNotification);
@@ -24,20 +24,34 @@ OpenRefMonitorAudioProcessorEditor::OpenRefMonitorAudioProcessorEditor(OpenRefMo
     correctionButton.setClickingTogglesState(true);
     addAndMakeVisible(correctionButton);
 
+    profileBox.addItemList({ "ATH-M70x AutoEq" }, 1);
+    addAndMakeVisible(profileBox);
+
+    targetBox.addItemList({ "Neutral Harman-like", "Flat Custom" }, 1);
+    addAndMakeVisible(targetBox);
+
     modeBox.addItemList({ "Zero Latency", "Minimum Phase", "Linear Phase" }, 1);
     addAndMakeVisible(modeBox);
 
     translationBox.addItemList({ "Off", "Small Phone Speaker", "Laptop Speaker", "Basic Car Check", "Mono Midrange", "Bass-limited Check", "Bright Earbuds Check" }, 1);
     addAndMakeVisible(translationBox);
 
-    for (auto* slider : { &amountSlider, &dryWetSlider, &outputGainSlider }) {
+    for (auto* slider : { &amountSlider, &dryWetSlider, &outputGainSlider, &bassTiltSlider, &trebleTiltSlider }) {
         slider->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
         slider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 90, 22);
         addAndMakeVisible(slider);
     }
-    amountSlider.setName("Amount");
-    dryWetSlider.setName("Dry/Wet");
-    outputGainSlider.setName("Output");
+    auto configureSliderLabel = [this](juce::Label& label, juce::String text) {
+        label.setText(text, juce::dontSendNotification);
+        label.setJustificationType(juce::Justification::centred);
+        label.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
+        addAndMakeVisible(label);
+    };
+    configureSliderLabel(amountLabel, "Amount");
+    configureSliderLabel(dryWetLabel, "Dry/Wet");
+    configureSliderLabel(outputGainLabel, "Output");
+    configureSliderLabel(bassTiltLabel, "Bass Tilt");
+    configureSliderLabel(trebleTiltLabel, "Treble Tilt");
 
     addAndMakeVisible(safeHeadroomButton);
     addAndMakeVisible(autoBypassButton);
@@ -59,6 +73,10 @@ OpenRefMonitorAudioProcessorEditor::OpenRefMonitorAudioProcessorEditor(OpenRefMo
     safeHeadroomAttachment = std::make_unique<ButtonAttachment>(processor.parameters, openref::ParameterIds::safeHeadroom, safeHeadroomButton);
     autoBypassAttachment = std::make_unique<ButtonAttachment>(processor.parameters, openref::ParameterIds::autoBypassOffline, autoBypassButton);
     monoAttachment = std::make_unique<ButtonAttachment>(processor.parameters, openref::ParameterIds::monoCheck, monoButton);
+    profileAttachment = std::make_unique<ComboAttachment>(processor.parameters, openref::ParameterIds::profileId, profileBox);
+    targetAttachment = std::make_unique<ComboAttachment>(processor.parameters, openref::ParameterIds::targetId, targetBox);
+    bassTiltAttachment = std::make_unique<SliderAttachment>(processor.parameters, openref::ParameterIds::bassTiltDb, bassTiltSlider);
+    trebleTiltAttachment = std::make_unique<SliderAttachment>(processor.parameters, openref::ParameterIds::trebleTiltDb, trebleTiltSlider);
 
     startTimerHz(30);
 }
@@ -74,19 +92,34 @@ void OpenRefMonitorAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds().reduced(22);
     auto top = area.removeFromTop(62);
-    title.setBounds(top.removeFromLeft(280));
-    correctionButton.setBounds(top.removeFromLeft(120).reduced(4));
-    modeBox.setBounds(top.removeFromLeft(170).reduced(4));
-    translationBox.setBounds(top.removeFromLeft(220).reduced(4));
-    autoBypassButton.setBounds(top.removeFromLeft(230).reduced(4));
+    title.setBounds(top.removeFromLeft(210));
+    correctionButton.setBounds(top.removeFromLeft(105).reduced(4));
+    profileBox.setBounds(top.removeFromLeft(155).reduced(4));
+    targetBox.setBounds(top.removeFromLeft(150).reduced(4));
+    modeBox.setBounds(top.removeFromLeft(135).reduced(4));
+    autoBypassButton.setBounds(top.removeFromLeft(200).reduced(4));
+
+    auto subTop = area.removeFromTop(48);
+    translationBox.setBounds(subTop.removeFromLeft(260).reduced(4));
 
     warning.setBounds(area.removeFromBottom(32));
     attributionLabel.setBounds(area.removeFromBottom(26));
 
     auto right = area.removeFromRight(260).reduced(10);
-    amountSlider.setBounds(right.removeFromTop(118));
-    dryWetSlider.setBounds(right.removeFromTop(118));
-    outputGainSlider.setBounds(right.removeFromTop(118));
+    auto sliderGrid = right.removeFromTop(312);
+    auto layoutSlider = [](juce::Rectangle<int> cell, juce::Label& label, juce::Slider& slider) {
+        cell.reduce(4, 2);
+        label.setBounds(cell.removeFromTop(18));
+        slider.setBounds(cell);
+    };
+    auto firstRow = sliderGrid.removeFromTop(104);
+    layoutSlider(firstRow.removeFromLeft(120), amountLabel, amountSlider);
+    layoutSlider(firstRow.removeFromLeft(120), dryWetLabel, dryWetSlider);
+    auto secondRow = sliderGrid.removeFromTop(104);
+    layoutSlider(secondRow.removeFromLeft(120), outputGainLabel, outputGainSlider);
+    layoutSlider(secondRow.removeFromLeft(120), bassTiltLabel, bassTiltSlider);
+    auto thirdRow = sliderGrid.removeFromTop(104);
+    layoutSlider(thirdRow.removeFromLeft(120), trebleTiltLabel, trebleTiltSlider);
     safeHeadroomButton.setBounds(right.removeFromTop(34));
     monoButton.setBounds(right.removeFromTop(34));
     latencyLabel.setBounds(right.removeFromTop(30));

@@ -26,17 +26,17 @@ OpenRef implements these as original UX/DSP choices, with different terminology 
 - Cubase Pro 14 Control Room Monitor Insert workflow.
 - Audio-Technica ATH-M70x profile generated from public AutoEq data or user-imported CSV/PEQ files.
 - Zero-latency PEQ correction with RBJ biquad filters.
-- Safe Headroom, Dry/Wet, Amount, output gain, mono check.
+- Safe Headroom, Dry/Wet, Amount, output gain, mono check, bass/treble tilt.
 - Basic response graph and meters.
 - Auto-bypass during offline render ON by default.
 - JSON profile/target/simulation formats.
+- Independent translation-check filters wired into the realtime PEQ path.
 - Unit tests and pluginval validation path.
 
 ## v1.5 goals
 
 - Minimum-phase FIR and linear-phase FIR modes.
 - Full custom target curve editor.
-- Translation Check DSP routing.
 - L/R individual profile import.
 - Background DSP-state rebuild and click-free crossfade swaps.
 

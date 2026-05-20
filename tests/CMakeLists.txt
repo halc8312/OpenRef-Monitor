@@ -8,6 +8,7 @@ FetchContent_MakeAvailable(Catch2)
 
 add_executable(openref_tests
     test_biquad_response.cpp
+    test_correction_engine.cpp
     test_profile_parser.cpp
     test_fir_designer.cpp
     test_bypass_null.cpp
