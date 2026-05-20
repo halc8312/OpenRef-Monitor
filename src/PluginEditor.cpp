@@ -41,11 +41,17 @@ OpenRefMonitorAudioProcessorEditor::OpenRefMonitorAudioProcessorEditor(OpenRefMo
         slider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 90, 22);
         addAndMakeVisible(slider);
     }
-    amountSlider.setName("Amount");
-    dryWetSlider.setName("Dry/Wet");
-    outputGainSlider.setName("Output");
-    bassTiltSlider.setName("Bass Tilt");
-    trebleTiltSlider.setName("Treble Tilt");
+    auto configureSliderLabel = [this](juce::Label& label, juce::String text) {
+        label.setText(text, juce::dontSendNotification);
+        label.setJustificationType(juce::Justification::centred);
+        label.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
+        addAndMakeVisible(label);
+    };
+    configureSliderLabel(amountLabel, "Amount");
+    configureSliderLabel(dryWetLabel, "Dry/Wet");
+    configureSliderLabel(outputGainLabel, "Output");
+    configureSliderLabel(bassTiltLabel, "Bass Tilt");
+    configureSliderLabel(trebleTiltLabel, "Treble Tilt");
 
     addAndMakeVisible(safeHeadroomButton);
     addAndMakeVisible(autoBypassButton);
@@ -100,11 +106,16 @@ void OpenRefMonitorAudioProcessorEditor::resized()
     attributionLabel.setBounds(area.removeFromBottom(26));
 
     auto right = area.removeFromRight(260).reduced(10);
-    amountSlider.setBounds(right.removeFromTop(96));
-    dryWetSlider.setBounds(right.removeFromTop(96));
-    outputGainSlider.setBounds(right.removeFromTop(96));
-    bassTiltSlider.setBounds(right.removeFromTop(88));
-    trebleTiltSlider.setBounds(right.removeFromTop(88));
+    auto layoutSlider = [&right](juce::Label& label, juce::Slider& slider, int height) {
+        auto sliderArea = right.removeFromTop(height);
+        label.setBounds(sliderArea.removeFromTop(20));
+        slider.setBounds(sliderArea);
+    };
+    layoutSlider(amountLabel, amountSlider, 96);
+    layoutSlider(dryWetLabel, dryWetSlider, 96);
+    layoutSlider(outputGainLabel, outputGainSlider, 96);
+    layoutSlider(bassTiltLabel, bassTiltSlider, 88);
+    layoutSlider(trebleTiltLabel, trebleTiltSlider, 88);
     safeHeadroomButton.setBounds(right.removeFromTop(34));
     monoButton.setBounds(right.removeFromTop(34));
     latencyLabel.setBounds(right.removeFromTop(30));

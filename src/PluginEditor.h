@@ -34,6 +34,11 @@ private:
     juce::Slider outputGainSlider;
     juce::Slider bassTiltSlider;
     juce::Slider trebleTiltSlider;
+    juce::Label amountLabel;
+    juce::Label dryWetLabel;
+    juce::Label outputGainLabel;
+    juce::Label bassTiltLabel;
+    juce::Label trebleTiltLabel;
     juce::ToggleButton safeHeadroomButton { "Safe Headroom" };
     juce::ToggleButton autoBypassButton { "Auto-bypass offline render" };
     juce::ToggleButton monoButton { "Mono Check" };
