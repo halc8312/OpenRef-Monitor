@@ -1,0 +1,11 @@
+{
+  "id": "phone_small_speaker",
+  "displayName": "Small Phone Speaker",
+  "description": "Band-limited small speaker check",
+  "filters": [
+    { "type": "highpass", "freqHz": 180.0, "q": 0.707 },
+    { "type": "lowpass", "freqHz": 9000.0, "q": 0.707 },
+    { "type": "peaking", "freqHz": 2500.0, "gainDb": 3.0, "q": 1.0 }
+  ],
+  "mono": true
+}

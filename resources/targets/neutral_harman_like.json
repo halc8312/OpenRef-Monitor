@@ -1,0 +1,16 @@
+{
+  "id": "neutral_harman_like",
+  "displayName": "Neutral Harman-like",
+  "license": "Project-authored approximation; not copied from proprietary products",
+  "points": [
+    { "hz": 20, "db": 3.0 },
+    { "hz": 60, "db": 4.0 },
+    { "hz": 120, "db": 2.5 },
+    { "hz": 300, "db": 0.5 },
+    { "hz": 1000, "db": 0.0 },
+    { "hz": 3000, "db": 2.0 },
+    { "hz": 6000, "db": 1.0 },
+    { "hz": 10000, "db": -1.0 },
+    { "hz": 20000, "db": -3.0 }
+  ]
+}

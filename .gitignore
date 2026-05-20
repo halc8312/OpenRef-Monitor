@@ -1,0 +1,8 @@
+build*/
+.cache/
+.DS_Store
+*.user
+*.suo
+*.vcxproj.user
+__pycache__/
+*.pyc
