@@ -1,0 +1,60 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  linux-core-tests:
+    name: Linux core tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      - name: Validate profile and Python tools
+        run: |
+          python3 tools/validate_profile.py resources/profiles/audio-technica-ath-m70x.autoeq.json
+          python3 -m py_compile tools/*.py
+
+      - name: Configure
+        run: cmake -S . -B build-core -DOPENREF_BUILD_PLUGIN=OFF -DOPENREF_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build-core --parallel 2
+
+      - name: Test
+        run: ctest --test-dir build-core --output-on-failure
+
+  windows-vst3-build:
+    name: Windows VST3 build
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate profile and Python tools
+        shell: pwsh
+        run: |
+          python tools/validate_profile.py resources/profiles/audio-technica-ath-m70x.autoeq.json
+          python -m py_compile tools/*.py
+
+      - name: Configure
+        shell: pwsh
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DOPENREF_BUILD_PLUGIN=ON -DOPENREF_BUILD_TESTS=OFF
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build build --config Release --parallel 2
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenRef-Monitor-Windows-VST3
+          path: build/OpenRefMonitor_artefacts/Release/VST3/OpenRef Monitor.vst3
+          if-no-files-found: error

@@ -11,8 +11,8 @@ This repository contains the initial buildable skeleton and v1 DSP/profile found
 - JUCE 8 CMake VST3 + standalone target.
 - Zero-latency PEQ correction using RBJ biquad filters.
 - ATH-M70x profile generated from AutoEq public results.
-- Safe Headroom analysis, Dry/Wet, Amount, output gain, mono check, metering, and offline-render auto-bypass parameter plumbing.
-- JSON profile/target/simulation resources.
+- Safe Headroom analysis, Dry/Wet, Amount, output gain, mono check, bass/treble tilt, metering, and offline-render auto-bypass.
+- JSON profile/target/simulation resources, with bundled target curves and independent translation checks wired into the realtime PEQ path.
 - Python tools for fetching/converting/validating AutoEq profiles.
 - Unit tests for DSP/profile/tool basics.
 

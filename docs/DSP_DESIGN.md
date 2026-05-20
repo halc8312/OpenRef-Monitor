@@ -25,7 +25,13 @@ Zero Latency mode applies AutoEq-style parametric filters as cascaded RBJ biquad
 - Low pass
 - High pass
 
-Coefficients are recalculated on sample-rate changes. Steady-state `processBlock` must avoid file I/O, locks, and DSP-vector resizing.
+Coefficients are recalculated on sample-rate changes. Target modifiers, bass/treble tilt, and translation-check filters are preallocated and updated from parameter state without file I/O or dynamic allocation in the audio callback. Steady-state `processBlock` must avoid file I/O, locks, and DSP-vector resizing.
+
+## Target modifiers and translation checks
+
+The bundled `Neutral Harman-like` target adds a gentle low-shelf lift and high-shelf trim before user tilt controls. `Flat Custom` leaves the target modifier flat. Bass Tilt and Treble Tilt add low/high shelf filters at 120 Hz and 8 kHz.
+
+Translation checks use independent OpenRef simulation resources. Selecting a simulation inserts its filter set after headphone correction and target modifiers. Simulations marked `mono` also force mono summing while active, even if the global Mono Check toggle is off.
 
 ## Safe Headroom
 

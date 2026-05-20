@@ -35,11 +35,29 @@ void CorrectionEngine::reset() noexcept
     for (auto& filter : rightFilters) {
         filter.reset();
     }
+    for (std::size_t i = 0; i < extraFilterCount; ++i) {
+        leftExtraFilters[i].reset();
+        rightExtraFilters[i].reset();
+    }
 }
 
 void CorrectionEngine::setOutputGainDb(double gainDb) noexcept
 {
     outputGainLinear = static_cast<float>(std::pow(10.0, gainDb / 20.0));
+}
+
+void CorrectionEngine::setExtraFilters(const FilterSpec* specs, std::size_t count)
+{
+    extraFilterCount = std::min(count, maxExtraFilters);
+    for (std::size_t i = 0; i < extraFilterCount; ++i) {
+        const auto coefficients = designBiquad(specs[i], currentSampleRate);
+        leftExtraFilters[i].setCoefficients(coefficients);
+        rightExtraFilters[i].setCoefficients(coefficients);
+    }
+    for (std::size_t i = extraFilterCount; i < maxExtraFilters; ++i) {
+        leftExtraFilters[i].reset();
+        rightExtraFilters[i].reset();
+    }
 }
 
 void CorrectionEngine::process(float* left, float* right, std::size_t count, float dryWet, bool monoCheck) noexcept
@@ -59,6 +77,10 @@ void CorrectionEngine::process(float* left, float* right, std::size_t count, flo
         for (auto& filter : rightFilters) {
             wetRight = filter.processSample(wetRight);
         }
+        for (std::size_t filterIndex = 0; filterIndex < extraFilterCount; ++filterIndex) {
+            wetLeft = leftExtraFilters[filterIndex].processSample(wetLeft);
+            wetRight = rightExtraFilters[filterIndex].processSample(wetRight);
+        }
 
         if (monoCheck) {
             const auto mono = 0.5f * (wetLeft + wetRight);
@@ -77,6 +99,10 @@ double CorrectionEngine::responseDb(double frequencyHz, int channel) const noexc
     double total = 0.0;
     for (const auto& filter : filters) {
         total += filter.magnitudeDb(frequencyHz, currentSampleRate);
+    }
+    const auto& extraFilters = channel == 1 ? rightExtraFilters : leftExtraFilters;
+    for (std::size_t filterIndex = 0; filterIndex < extraFilterCount; ++filterIndex) {
+        total += extraFilters[filterIndex].magnitudeDb(frequencyHz, currentSampleRate);
     }
     return total;
 }
