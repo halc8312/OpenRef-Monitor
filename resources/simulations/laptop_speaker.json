@@ -1,0 +1,12 @@
+{
+  "id": "laptop_speaker",
+  "displayName": "Laptop Speaker",
+  "description": "Thin nearfield laptop speaker check",
+  "filters": [
+    { "type": "highpass", "freqHz": 140.0, "q": 0.707 },
+    { "type": "lowpass", "freqHz": 12000.0, "q": 0.707 },
+    { "type": "peaking", "freqHz": 900.0, "gainDb": 2.0, "q": 1.2 },
+    { "type": "peaking", "freqHz": 3500.0, "gainDb": 2.5, "q": 1.0 }
+  ],
+  "mono": false
+}

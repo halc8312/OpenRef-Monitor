@@ -1,0 +1,12 @@
+{
+  "id": "flat_custom",
+  "displayName": "Flat Custom",
+  "license": "Project-authored",
+  "points": [
+    { "hz": 20, "db": 0.0 },
+    { "hz": 100, "db": 0.0 },
+    { "hz": 1000, "db": 0.0 },
+    { "hz": 10000, "db": 0.0 },
+    { "hz": 20000, "db": 0.0 }
+  ]
+}

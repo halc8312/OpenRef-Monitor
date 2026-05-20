@@ -1,0 +1,12 @@
+{
+  "id": "car_basic",
+  "displayName": "Basic Car Check",
+  "description": "Broad bass/upper-mid contour for a compact car reference",
+  "filters": [
+    { "type": "lowshelf", "freqHz": 120.0, "gainDb": 2.5, "q": 0.7 },
+    { "type": "peaking", "freqHz": 450.0, "gainDb": -1.5, "q": 0.9 },
+    { "type": "peaking", "freqHz": 2800.0, "gainDb": 1.5, "q": 1.0 },
+    { "type": "highshelf", "freqHz": 10000.0, "gainDb": -1.0, "q": 0.7 }
+  ],
+  "mono": false
+}

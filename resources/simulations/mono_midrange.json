@@ -1,0 +1,10 @@
+{
+  "id": "mono_midrange",
+  "displayName": "Mono Midrange",
+  "description": "Mono band-limited balance check",
+  "filters": [
+    { "type": "highpass", "freqHz": 220.0, "q": 0.707 },
+    { "type": "lowpass", "freqHz": 5500.0, "q": 0.707 }
+  ],
+  "mono": true
+}
